@@ -2,3 +2,6 @@
 url=https://zabbix.localhost/zabbix/api_jsonrpc.php
 user=apiuser
 pass=
+
+[git]
+repodir=/home/tony4715/zabbix_configs

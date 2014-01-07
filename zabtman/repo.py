@@ -3,12 +3,17 @@ from os.path import expanduser,basename
 from os import rename,listdir
 import uuid
 import json
+import ConfigParser
 class repo(object):
   homedir = expanduser("~")
   repodir=homedir+"/zabbix_configs"
   uniq = uuid.uuid1()
   newfile = ''
   def __init__(self,env):
+    Config = ConfigParser.ConfigParser()
+    # get user's home directory
+    Config.read(self.homedir+'/.zabbix')
+    self.repodir = Config.get('git','repodir')
     self.repo = Repo(self.repodir)
     self.git = self.repo.git
     self.newfile=self.repodir+'/'+env+'-'+str(self.uniq)+'.json'
