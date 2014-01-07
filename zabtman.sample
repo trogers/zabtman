@@ -1,0 +1,4 @@
+[dev-us-ord1]
+url=https://zabbix-n01.test.ord1.us.ci.rackspace.net/zabbix/api_jsonrpc.php
+user=apiuser
+pass=

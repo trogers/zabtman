@@ -108,7 +108,7 @@ class ZabbixTemplateAPI(object):
             self.auth_key = results['result']
         return self.auth_key
 
-    def export(self, templates):
+    def export_json(self, templates):
         method = 'configuration.export'
         params = { 'format': 'json',
                 'options': {
@@ -116,9 +116,9 @@ class ZabbixTemplateAPI(object):
                 }
         }
         result = self.__call_api(method, params)['result']
-        return json.loads(result)
+        return json.dumps(result,indent=2)
 
-    def import(self, source, rules=None):
+    def import_json(self, source, rules=None):
         if rules is None:
             rules = IMPORT_RULES
         method = 'configuration.import'
@@ -126,4 +126,8 @@ class ZabbixTemplateAPI(object):
                 'source': source,
                 'rules': rules,
         }
-        return self.__call_api(method, params)['result']
+        ret = self.__call_api(method, params)
+        try:
+          return ret['error']
+        except KeyError:
+          return ret['result']
