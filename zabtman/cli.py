@@ -22,13 +22,12 @@ import argparse
 import ConfigParser
 import sys
 import json
+from repo import repo
 def run():
   parser = argparse.ArgumentParser(prog='zabtman',description='Zabbix Template Manager')
   parser.add_argument('--environment', help='section from config file', required=True)
-  parser.add_argument('--filename', help='filename of import/export', required=True)
   parser.add_argument('action', help='import|export')
   parser.add_argument('--templates', help='template ids (comma-separated)')
-
   args = parser.parse_args()
   Config = ConfigParser.ConfigParser()
   # get user's home directory
@@ -39,9 +38,10 @@ def run():
   password = Config.get(args.environment,'pass')
   zabt = ZabbixTemplateAPI(url, user, password)
   if args.action == 'import':
-    f = open(args.filename, 'r')
-    print 'Importing '+args.filename
-    data = f.read()
+    r = repo(args.environment)
+    print r.list_files('master')
+    templates = raw_input("What template do you want to import?: ")
+    data = r.get_file(templates)
     ret = zabt.import_json(data)
     try:
       print ret['data']
@@ -49,10 +49,9 @@ def run():
       print 'Import Successful'
   elif args.action == 'export':
     if args.templates is not None:
-      f = open(args.filename, 'w')
-      print 'Exporting to '+args.filename
-      ret = zabt.export_json(args.templates)
-      f.write(json.loads(ret))
+      r = repo(args.environment)
+      ret = zabt.export_json(args.templates.split(','))
+      r.run(ret)
     else:
       print 'Error: Must include --template when exporting.'
       sys.exit(1)
